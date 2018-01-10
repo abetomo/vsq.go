@@ -1,4 +1,3 @@
-// WIP
 package vsq
 
 import (
@@ -73,5 +72,3 @@ func (vsq *VerySimpleQueue) unshift(data string) int {
 	vsq.writeDbFile()
 	return vsq.size()
 }
-
-// TODO: Other functions

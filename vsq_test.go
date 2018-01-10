@@ -1,4 +1,3 @@
-// WIP
 package vsq
 
 import (
@@ -233,5 +232,3 @@ func TestShiftFailed(t *testing.T) {
 		t.Fatalf("got %#v\nwant %#v", value, expected)
 	}
 }
-
-// TODO: Other functions
