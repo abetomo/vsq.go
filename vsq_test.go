@@ -3,9 +3,27 @@ package vsq
 
 import (
 	"errors"
+	"io/ioutil"
+	"os"
 	"reflect"
 	"testing"
 )
+
+const testFilePath = "/tmp/vsq_test.json"
+
+func TestMain(m *testing.M) {
+	if _, err := os.Stat(testFilePath); err == nil {
+		os.Remove(testFilePath)
+	}
+
+	exit := m.Run()
+
+	if _, err := os.Stat(testFilePath); err == nil {
+		os.Remove(testFilePath)
+	}
+
+	os.Exit(exit)
+}
 
 func Test_loadSuccess(t *testing.T) {
 	actual, err := load("testdata/data_file.json")
@@ -103,6 +121,23 @@ func TestSizeNoValue(t *testing.T) {
 
 	if expected := 0; vsq.size() != 0 {
 		t.Fatalf("got %#v\nwant %#v", vsq.size(), expected)
+	}
+}
+
+func TestWriteDbFile(t *testing.T) {
+	var vsq VerySimpleQueue
+	if _, err := vsq.load(testFilePath); err != nil {
+		t.Fatalf("failed test %#v", err)
+	}
+	vsq.writeDbFile()
+
+	bytes, err := ioutil.ReadFile(testFilePath)
+	if err != nil {
+		t.Fatalf("failed test %#v", err)
+	}
+
+	if expected := []byte(`{"Name":"VerySimpleQueue","Value":[]}`); !reflect.DeepEqual(bytes, expected) {
+		t.Fatalf("got %#v\nwant %#v", bytes, expected)
 	}
 }
 

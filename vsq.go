@@ -51,4 +51,9 @@ func (vsq VerySimpleQueue) size() int {
 	return len(vsq.Data.Value)
 }
 
+func (vsq VerySimpleQueue) writeDbFile() {
+	bytes, _ := json.Marshal(vsq.Data)
+	ioutil.WriteFile(vsq.FilePath, bytes, 0644)
+}
+
 // TODO: Other functions
