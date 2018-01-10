@@ -47,4 +47,8 @@ func (vsq *VerySimpleQueue) load(filePath string) (VsqData, error) {
 	return vsq.Data, nil
 }
 
+func (vsq VerySimpleQueue) size() int {
+	return len(vsq.Data.Value)
+}
+
 // TODO: Other functions

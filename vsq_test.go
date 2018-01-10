@@ -84,4 +84,26 @@ func TestLoadSuccess(t *testing.T) {
 	}
 }
 
+func TestSizeWithValue(t *testing.T) {
+	var vsq VerySimpleQueue
+	if _, err := vsq.load("testdata/data_file.json"); err != nil {
+		t.Fatalf("failed test %#v", err)
+	}
+
+	if expected := 3; vsq.size() != 3 {
+		t.Fatalf("got %#v\nwant %#v", vsq.size(), expected)
+	}
+}
+
+func TestSizeNoValue(t *testing.T) {
+	var vsq VerySimpleQueue
+	if _, err := vsq.load("not_exist"); err != nil {
+		t.Fatalf("failed test %#v", err)
+	}
+
+	if expected := 0; vsq.size() != 0 {
+		t.Fatalf("got %#v\nwant %#v", vsq.size(), expected)
+	}
+}
+
 // TODO: Other functions
