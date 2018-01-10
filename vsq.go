@@ -56,4 +56,12 @@ func (vsq VerySimpleQueue) writeDbFile() {
 	ioutil.WriteFile(vsq.FilePath, bytes, 0644)
 }
 
+func (vsq *VerySimpleQueue) unshift(data string) int {
+	value := &vsq.Data.Value
+	// https://github.com/golang/go/wiki/SliceTricks#unshift
+	(*value) = append([]string{data}, (*value)...)
+	vsq.writeDbFile()
+	return vsq.size()
+}
+
 // TODO: Other functions

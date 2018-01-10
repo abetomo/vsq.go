@@ -12,10 +12,6 @@ import (
 const testFilePath = "/tmp/vsq_test.json"
 
 func TestMain(m *testing.M) {
-	if _, err := os.Stat(testFilePath); err == nil {
-		os.Remove(testFilePath)
-	}
-
 	exit := m.Run()
 
 	if _, err := os.Stat(testFilePath); err == nil {
@@ -137,6 +133,68 @@ func TestWriteDbFile(t *testing.T) {
 	}
 
 	if expected := []byte(`{"Name":"VerySimpleQueue","Value":[]}`); !reflect.DeepEqual(bytes, expected) {
+		t.Fatalf("got %#v\nwant %#v", bytes, expected)
+	}
+}
+
+func TestUnshiftSize1(t *testing.T) {
+	if _, err := os.Stat(testFilePath); err == nil {
+		os.Remove(testFilePath)
+	}
+
+	var vsq VerySimpleQueue
+	if _, err := vsq.load(testFilePath); err != nil {
+		t.Fatalf("failed test %#v", err)
+	}
+
+	size := vsq.unshift("hoge")
+
+	if expected := 1; size != expected {
+		t.Fatalf("got %#v\nwant %#v", size, expected)
+	}
+
+	if expected := (VsqData{"VerySimpleQueue", []string{"hoge"}}); !reflect.DeepEqual(vsq.Data, expected) {
+		t.Fatalf("got %#v\nwant %#v", vsq.Data, expected)
+	}
+
+	bytes, err := ioutil.ReadFile(testFilePath)
+	if err != nil {
+		t.Fatalf("failed test %#v", err)
+	}
+
+	if expected := []byte(`{"Name":"VerySimpleQueue","Value":["hoge"]}`); !reflect.DeepEqual(bytes, expected) {
+		t.Fatalf("got %#v\nwant %#v", bytes, expected)
+	}
+}
+
+func TestUnshiftSize3(t *testing.T) {
+	if _, err := os.Stat(testFilePath); err == nil {
+		os.Remove(testFilePath)
+	}
+
+	var vsq VerySimpleQueue
+	if _, err := vsq.load(testFilePath); err != nil {
+		t.Fatalf("failed test %#v", err)
+	}
+
+	vsq.unshift("hoge")
+	vsq.unshift("fuga")
+	size := vsq.unshift("piyo")
+
+	if expected := 3; size != expected {
+		t.Fatalf("got %#v\nwant %#v", size, expected)
+	}
+
+	if expected := (VsqData{"VerySimpleQueue", []string{"piyo", "fuga", "hoge"}}); !reflect.DeepEqual(vsq.Data, expected) {
+		t.Fatalf("got %#v\nwant %#v", vsq.Data, expected)
+	}
+
+	bytes, err := ioutil.ReadFile(testFilePath)
+	if err != nil {
+		t.Fatalf("failed test %#v", err)
+	}
+
+	if expected := []byte(`{"Name":"VerySimpleQueue","Value":["piyo","fuga","hoge"]}`); !reflect.DeepEqual(bytes, expected) {
 		t.Fatalf("got %#v\nwant %#v", bytes, expected)
 	}
 }
