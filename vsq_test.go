@@ -199,4 +199,45 @@ func TestUnshiftSize3(t *testing.T) {
 	}
 }
 
+func TestShiftSuccess(t *testing.T) {
+	if _, err := os.Stat(testFilePath); err == nil {
+		os.Remove(testFilePath)
+	}
+
+	var vsq VerySimpleQueue
+	if _, err := vsq.load(testFilePath); err != nil {
+		t.Fatalf("failed test %#v", err)
+	}
+	vsq.unshift("hoge")
+
+	value, err := vsq.shift()
+	if err != nil {
+		t.Fatalf("failed test %#v", err)
+	}
+
+	if expected := "hoge"; value != expected {
+		t.Fatalf("got %#v\nwant %#v", value, expected)
+	}
+}
+
+func TestShiftFailed(t *testing.T) {
+	if _, err := os.Stat(testFilePath); err == nil {
+		os.Remove(testFilePath)
+	}
+
+	var vsq VerySimpleQueue
+	if _, err := vsq.load(testFilePath); err != nil {
+		t.Fatalf("failed test %#v", err)
+	}
+
+	value, err := vsq.shift()
+	if err == nil {
+		t.Fatalf("Succeeded with failed test")
+	}
+
+	if expected := ""; value != expected {
+		t.Fatalf("got %#v\nwant %#v", value, expected)
+	}
+}
+
 // TODO: Other functions

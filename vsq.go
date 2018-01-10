@@ -56,6 +56,16 @@ func (vsq VerySimpleQueue) writeDbFile() {
 	ioutil.WriteFile(vsq.FilePath, bytes, 0644)
 }
 
+func (vsq *VerySimpleQueue) shift() (string, error) {
+	if vsq.size() == 0 {
+		return "", errors.New("size is zero")
+	}
+	value := vsq.Data.Value[0]
+	vsq.Data.Value = vsq.Data.Value[1:]
+	vsq.writeDbFile()
+	return value, nil
+}
+
 func (vsq *VerySimpleQueue) unshift(data string) int {
 	value := &vsq.Data.Value
 	// https://github.com/golang/go/wiki/SliceTricks#unshift
