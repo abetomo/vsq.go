@@ -11,13 +11,15 @@ import (
 
 const testFilePath = "/tmp/vsq_test.json"
 
-func TestMain(m *testing.M) {
-	exit := m.Run()
-
+func removeTestFile() {
 	if _, err := os.Stat(testFilePath); err == nil {
 		os.Remove(testFilePath)
 	}
+}
 
+func TestMain(m *testing.M) {
+	exit := m.Run()
+	removeTestFile()
 	os.Exit(exit)
 }
 
@@ -138,9 +140,7 @@ func TestWriteDbFile(t *testing.T) {
 }
 
 func TestUnshiftSize1(t *testing.T) {
-	if _, err := os.Stat(testFilePath); err == nil {
-		os.Remove(testFilePath)
-	}
+	removeTestFile()
 
 	var vsq VerySimpleQueue
 	if _, err := vsq.load(testFilePath); err != nil {
@@ -168,9 +168,7 @@ func TestUnshiftSize1(t *testing.T) {
 }
 
 func TestUnshiftSize3(t *testing.T) {
-	if _, err := os.Stat(testFilePath); err == nil {
-		os.Remove(testFilePath)
-	}
+	removeTestFile()
 
 	var vsq VerySimpleQueue
 	if _, err := vsq.load(testFilePath); err != nil {
@@ -200,9 +198,7 @@ func TestUnshiftSize3(t *testing.T) {
 }
 
 func TestShiftSuccess(t *testing.T) {
-	if _, err := os.Stat(testFilePath); err == nil {
-		os.Remove(testFilePath)
-	}
+	removeTestFile()
 
 	var vsq VerySimpleQueue
 	if _, err := vsq.load(testFilePath); err != nil {
@@ -221,9 +217,7 @@ func TestShiftSuccess(t *testing.T) {
 }
 
 func TestShiftFailed(t *testing.T) {
-	if _, err := os.Stat(testFilePath); err == nil {
-		os.Remove(testFilePath)
-	}
+	removeTestFile()
 
 	var vsq VerySimpleQueue
 	if _, err := vsq.load(testFilePath); err != nil {
