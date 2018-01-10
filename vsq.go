@@ -18,7 +18,7 @@ type VerySimpleQueue struct {
 	FilePath string
 }
 
-func (vsq *VerySimpleQueue) load(filePath string) (VsqData, error) {
+func load(filePath string) (VsqData, error) {
 	if _, err := os.Stat(filePath); err != nil {
 		defaultVsqData := VsqData{"VerySimpleQueue", []string{}}
 		return defaultVsqData, nil

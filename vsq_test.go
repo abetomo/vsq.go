@@ -8,8 +8,7 @@ import (
 )
 
 func Test_loadSuccess(t *testing.T) {
-	var vsq VerySimpleQueue
-	actual, err := vsq.load("testdata/data_file.json")
+	actual, err := load("testdata/data_file.json")
 
 	if err != nil {
 		t.Fatalf("failed test %#v", err)
@@ -21,8 +20,7 @@ func Test_loadSuccess(t *testing.T) {
 }
 
 func Test_loadSucessFileNotExist(t *testing.T) {
-	var vsq VerySimpleQueue
-	actual, err := vsq.load("not_exist")
+	actual, err := load("not_exist")
 
 	if err != nil {
 		t.Fatalf("failed test %#v", err)
@@ -34,8 +32,7 @@ func Test_loadSucessFileNotExist(t *testing.T) {
 }
 
 func Test_loadFailedNameInvalid(t *testing.T) {
-	var vsq VerySimpleQueue
-	actual, err := vsq.load("testdata/name_invalid_file.json")
+	actual, err := load("testdata/name_invalid_file.json")
 
 	if err == nil {
 		t.Fatalf("Succeeded with failed test")
@@ -51,8 +48,7 @@ func Test_loadFailedNameInvalid(t *testing.T) {
 }
 
 func Test_loadFailedValueInvalid(t *testing.T) {
-	var vsq VerySimpleQueue
-	actual, err := vsq.load("testdata/value_invalid_file.json")
+	actual, err := load("testdata/value_invalid_file.json")
 
 	if err == nil {
 		t.Fatalf("Succeeded with failed test")
