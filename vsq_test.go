@@ -63,4 +63,25 @@ func Test_loadFailedValueInvalid(t *testing.T) {
 	}
 }
 
+func TestLoadSuccess(t *testing.T) {
+	var vsq VerySimpleQueue
+	actual, err := vsq.load("testdata/data_file.json")
+
+	if err != nil {
+		t.Fatalf("failed test %#v", err)
+	}
+
+	dataExpected := (VsqData{"VerySimpleQueue", []string{"1", "2", "3"}})
+	if !reflect.DeepEqual(actual, dataExpected) {
+		t.Fatalf("got %#v\nwant %#v (return value)", actual, dataExpected)
+	}
+	if !reflect.DeepEqual(vsq.Data, dataExpected) {
+		t.Fatalf("got %#v\nwant %#v (vsq.Data)", vsq.Data, dataExpected)
+	}
+
+	if expected := "testdata/data_file.json"; vsq.FilePath != expected {
+		t.Fatalf("got %#v\nwant %#v (vsq.FilePath)", vsq.FilePath, expected)
+	}
+}
+
 // TODO: Other functions

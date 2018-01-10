@@ -36,4 +36,15 @@ func load(filePath string) (VsqData, error) {
 	return vsqData, nil
 }
 
+func (vsq *VerySimpleQueue) load(filePath string) (VsqData, error) {
+	var err error
+	vsq.Data, err = load(filePath)
+	if err != nil {
+		return VsqData{}, err
+	}
+
+	vsq.FilePath = filePath
+	return vsq.Data, nil
+}
+
 // TODO: Other functions
