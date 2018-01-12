@@ -46,3 +46,12 @@ func (vsq *VerySimpleQueueLikeSQS) load(filePath string) (VsqDataLikeSQS, error)
 	vsq.FilePath = filePath
 	return vsq.Data, nil
 }
+
+func (vsq VerySimpleQueueLikeSQS) size() int {
+	return len(vsq.Data.Value)
+}
+
+func (vsq VerySimpleQueueLikeSQS) writeDbFile() {
+	bytes, _ := json.Marshal(vsq.Data)
+	ioutil.WriteFile(vsq.FilePath, bytes, 0644)
+}

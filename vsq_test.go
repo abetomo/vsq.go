@@ -122,6 +122,8 @@ func TestSizeNoValue(t *testing.T) {
 }
 
 func TestWriteDbFile(t *testing.T) {
+	removeTestFile()
+
 	var vsq VerySimpleQueue
 	if _, err := vsq.load(testFilePath); err != nil {
 		t.Fatalf("failed test %#v", err)
