@@ -91,7 +91,7 @@ func TestSizeWithValue_LikeSQS(t *testing.T) {
 		t.Fatalf("failed test %#v", err)
 	}
 
-	if expected := 3; vsq.size() != 3 {
+	if expected := 3; vsq.size() != expected {
 		t.Fatalf("got %#v\nwant %#v", vsq.size(), expected)
 	}
 }
@@ -102,7 +102,7 @@ func TestSizeNoValue_LikeSQS(t *testing.T) {
 		t.Fatalf("failed test %#v", err)
 	}
 
-	if expected := 0; vsq.size() != 0 {
+	if expected := 0; vsq.size() != expected {
 		t.Fatalf("got %#v\nwant %#v", vsq.size(), expected)
 	}
 }
