@@ -1,4 +1,3 @@
-// WIP
 package vsq
 
 import (
