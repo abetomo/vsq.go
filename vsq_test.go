@@ -234,3 +234,98 @@ func TestShiftFailed(t *testing.T) {
 		t.Fatalf("got %#v\nwant %#v", value, expected)
 	}
 }
+
+func TestPushSize1(t *testing.T) {
+	removeTestFile()
+
+	var vsq VerySimpleQueue
+	if _, err := vsq.load(testFilePath); err != nil {
+		t.Fatalf("failed test %#v", err)
+	}
+
+	size := vsq.push("hoge")
+
+	if expected := 1; size != expected {
+		t.Fatalf("got %#v\nwant %#v", size, expected)
+	}
+
+	if expected := (VsqData{"VerySimpleQueue", []string{"hoge"}}); !reflect.DeepEqual(vsq.Data, expected) {
+		t.Fatalf("got %#v\nwant %#v", vsq.Data, expected)
+	}
+
+	bytes, err := ioutil.ReadFile(testFilePath)
+	if err != nil {
+		t.Fatalf("failed test %#v", err)
+	}
+
+	if expected := []byte(`{"Name":"VerySimpleQueue","Value":["hoge"]}`); !reflect.DeepEqual(bytes, expected) {
+		t.Fatalf("got %#v\nwant %#v", bytes, expected)
+	}
+}
+
+func TestPushSize3(t *testing.T) {
+	removeTestFile()
+
+	var vsq VerySimpleQueue
+	if _, err := vsq.load(testFilePath); err != nil {
+		t.Fatalf("failed test %#v", err)
+	}
+
+	vsq.push("hoge")
+	vsq.push("fuga")
+	size := vsq.push("piyo")
+
+	if expected := 3; size != expected {
+		t.Fatalf("got %#v\nwant %#v", size, expected)
+	}
+
+	if expected := (VsqData{"VerySimpleQueue", []string{"hoge", "fuga", "piyo"}}); !reflect.DeepEqual(vsq.Data, expected) {
+		t.Fatalf("got %#v\nwant %#v", vsq.Data, expected)
+	}
+
+	bytes, err := ioutil.ReadFile(testFilePath)
+	if err != nil {
+		t.Fatalf("failed test %#v", err)
+	}
+
+	if expected := []byte(`{"Name":"VerySimpleQueue","Value":["hoge","fuga","piyo"]}`); !reflect.DeepEqual(bytes, expected) {
+		t.Fatalf("got %#v\nwant %#v", bytes, expected)
+	}
+}
+
+func TestPopSuccess(t *testing.T) {
+	removeTestFile()
+
+	var vsq VerySimpleQueue
+	if _, err := vsq.load(testFilePath); err != nil {
+		t.Fatalf("failed test %#v", err)
+	}
+	vsq.push("hoge")
+
+	value, err := vsq.pop()
+	if err != nil {
+		t.Fatalf("failed test %#v", err)
+	}
+
+	if expected := "hoge"; value != expected {
+		t.Fatalf("got %#v\nwant %#v", value, expected)
+	}
+}
+
+func TestPopFailed(t *testing.T) {
+	removeTestFile()
+
+	var vsq VerySimpleQueue
+	if _, err := vsq.load(testFilePath); err != nil {
+		t.Fatalf("failed test %#v", err)
+	}
+
+	value, err := vsq.pop()
+	if err == nil {
+		t.Fatalf("Succeeded with failed test")
+	}
+
+	if expected := ""; value != expected {
+		t.Fatalf("got %#v\nwant %#v", value, expected)
+	}
+}

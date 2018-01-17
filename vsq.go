@@ -72,3 +72,21 @@ func (vsq *VerySimpleQueue) unshift(data string) int {
 	vsq.writeDbFile()
 	return vsq.size()
 }
+
+func (vsq *VerySimpleQueue) pop() (string, error) {
+	if vsq.size() == 0 {
+		return "", errors.New("size is zero")
+	}
+	length := len(vsq.Data.Value)
+
+	var value string
+	value, vsq.Data.Value = vsq.Data.Value[length-1], vsq.Data.Value[:length-1]
+	vsq.writeDbFile()
+	return value, nil
+}
+
+func (vsq *VerySimpleQueue) push(data string) int {
+	vsq.Data.Value = append(vsq.Data.Value, data)
+	vsq.writeDbFile()
+	return vsq.size()
+}
