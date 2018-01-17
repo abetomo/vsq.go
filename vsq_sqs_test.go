@@ -5,8 +5,20 @@ import (
 	"errors"
 	"io/ioutil"
 	"reflect"
+	"regexp"
 	"testing"
 )
+
+func mockUniqId() string {
+	return "test-id"
+}
+
+func TestUniqId(t *testing.T) {
+	actual := UniqId()
+	if r := regexp.MustCompile(`\d{9}-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}`); !r.MatchString(actual) {
+		t.Fatalf("%v not match %v", actual, r)
+	}
+}
 
 func Test_loadLikeSQSSuccess(t *testing.T) {
 	actual, err := loadLikeSQS("testdata/data_file_like_sqs.json")
@@ -123,5 +135,138 @@ func TestWriteDbFile_LikeSQS(t *testing.T) {
 
 	if expected := []byte(`{"Name":"VerySimpleQueueLikeSQS","Value":{}}`); !reflect.DeepEqual(bytes, expected) {
 		t.Fatalf("got %#v\nwant %#v", bytes, expected)
+	}
+}
+
+func TestSend(t *testing.T) {
+	removeTestFile()
+
+	var vsq VerySimpleQueueLikeSQS
+	if _, err := vsq.load(testFilePath); err != nil {
+		t.Fatalf("failed test %#v", err)
+	}
+
+	id := vsq.send("hoge", mockUniqId)
+
+	if expected := "test-id"; id != expected {
+		t.Fatalf("got %#v\nwant %#v", id, expected)
+	}
+
+	if expected := (VsqDataLikeSQS{"VerySimpleQueueLikeSQS", map[string]string{"test-id": "hoge"}}); !reflect.DeepEqual(vsq.Data, expected) {
+		t.Fatalf("got %#v\nwant %#v", vsq.Data, expected)
+	}
+
+	bytes, err := ioutil.ReadFile(testFilePath)
+	if err != nil {
+		t.Fatalf("failed test %#v", err)
+	}
+
+	if expected := []byte(`{"Name":"VerySimpleQueueLikeSQS","Value":{"test-id":"hoge"}}`); !reflect.DeepEqual(bytes, expected) {
+		t.Fatalf("got %#v\nwant %#v", bytes, expected)
+	}
+}
+
+func TestKeys(t *testing.T) {
+	removeTestFile()
+
+	var vsq VerySimpleQueueLikeSQS
+	var keys []string
+	if _, err := vsq.load(testFilePath); err != nil {
+		t.Fatalf("failed test %#v", err)
+	}
+
+	keys = vsq.keys()
+	if expected := []string{}; !reflect.DeepEqual(keys, expected) {
+		t.Fatalf("got %#v\nwant %#v", keys, expected)
+	}
+
+	vsq.send("hoge", mockUniqId)
+	keys = vsq.keys()
+	if expected := []string{"test-id"}; !reflect.DeepEqual(keys, expected) {
+		t.Fatalf("got %#v\nwant %#v", keys, expected)
+	}
+}
+
+func TestReceiveSuccess(t *testing.T) {
+	removeTestFile()
+
+	var vsq VerySimpleQueueLikeSQS
+	if _, err := vsq.load(testFilePath); err != nil {
+		t.Fatalf("failed test %#v", err)
+	}
+	vsq.send("hoge", mockUniqId)
+
+	value, err := vsq.receive()
+	if err != nil {
+		t.Fatalf("failed test %#v", err)
+	}
+
+	if expected := (VsqDataLikeSQSValue{"test-id", "hoge"}); !reflect.DeepEqual(value, expected) {
+		t.Fatalf("got %#v\nwant %#v", value, expected)
+	}
+}
+
+func TestReceiveFailed(t *testing.T) {
+	removeTestFile()
+
+	var vsq VerySimpleQueueLikeSQS
+	if _, err := vsq.load(testFilePath); err != nil {
+		t.Fatalf("failed test %#v", err)
+	}
+
+	value, err := vsq.receive()
+	if err == nil {
+		t.Fatalf("Succeeded with failed test")
+	}
+
+	if expected := (VsqDataLikeSQSValue{}); !reflect.DeepEqual(value, expected) {
+		t.Fatalf("got %#v\nwant %#v", value, expected)
+	}
+}
+
+func TestDeleteTrue(t *testing.T) {
+	removeTestFile()
+
+	var vsq VerySimpleQueueLikeSQS
+	if _, err := vsq.load(testFilePath); err != nil {
+		t.Fatalf("failed test %#v", err)
+	}
+
+	vsq.send("hoge", mockUniqId)
+	if expected := 1; vsq.size() != expected {
+		t.Fatalf("got %#v\nwant %#v", vsq.size(), expected)
+	}
+
+	ret := vsq.delete("test-id")
+	if expected := true; ret != expected {
+		t.Fatalf("got %#v\nwant %#v", ret, expected)
+	}
+
+	if expected := 0; vsq.size() != expected {
+		t.Fatalf("got %#v\nwant %#v", vsq.size(), expected)
+	}
+
+	bytes, err := ioutil.ReadFile(testFilePath)
+	if err != nil {
+		t.Fatalf("failed test %#v", err)
+	}
+
+	if expected := []byte(`{"Name":"VerySimpleQueueLikeSQS","Value":{}}`); !reflect.DeepEqual(bytes, expected) {
+		t.Fatalf("got %#v\nwant %#v", bytes, expected)
+	}
+}
+
+func TestDeleteFalse(t *testing.T) {
+	removeTestFile()
+
+	var vsq VerySimpleQueueLikeSQS
+	if _, err := vsq.load(testFilePath); err != nil {
+		t.Fatalf("failed test %#v", err)
+	}
+
+	ret := vsq.delete("hoge")
+
+	if expected := false; ret != expected {
+		t.Fatalf("got %#v\nwant %#v", ret, expected)
 	}
 }

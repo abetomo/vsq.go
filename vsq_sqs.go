@@ -4,8 +4,12 @@ package vsq
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
+	"github.com/satori/go.uuid"
 	"io/ioutil"
 	"os"
+	"sort"
+	"time"
 )
 
 type VsqDataLikeSQS struct {
@@ -13,9 +17,19 @@ type VsqDataLikeSQS struct {
 	Value map[string]string
 }
 
+type VsqDataLikeSQSValue struct {
+	Id   string
+	Body string
+}
+
 type VerySimpleQueueLikeSQS struct {
 	Data     VsqDataLikeSQS
 	FilePath string
+}
+
+func UniqId() string {
+	timestamp := time.Now().Unix()
+	return fmt.Sprintf("%d-%s", timestamp/10, uuid.Must(uuid.NewV4()))
 }
 
 func loadLikeSQS(filePath string) (VsqDataLikeSQS, error) {
@@ -54,4 +68,41 @@ func (vsq VerySimpleQueueLikeSQS) size() int {
 func (vsq VerySimpleQueueLikeSQS) writeDbFile() {
 	bytes, _ := json.Marshal(vsq.Data)
 	ioutil.WriteFile(vsq.FilePath, bytes, 0644)
+}
+
+func (vsq *VerySimpleQueueLikeSQS) send(data string, idFunc func() string) string {
+	id := idFunc()
+	if vsq.Data.Value == nil {
+		vsq.Data.Value = map[string]string{}
+	}
+	vsq.Data.Value[id] = data
+	vsq.writeDbFile()
+	return id
+}
+
+func (vsq VerySimpleQueueLikeSQS) keys() []string {
+	ks := []string{}
+	for k, _ := range vsq.Data.Value {
+		ks = append(ks, k)
+	}
+	return ks
+}
+
+func (vsq VerySimpleQueueLikeSQS) receive() (VsqDataLikeSQSValue, error) {
+	if vsq.size() == 0 {
+		return VsqDataLikeSQSValue{}, errors.New("size is zero")
+	}
+	keys := vsq.keys()
+	sort.Strings(keys)
+	id := keys[0]
+	return VsqDataLikeSQSValue{id, vsq.Data.Value[id]}, nil
+}
+
+func (vsq *VerySimpleQueueLikeSQS) delete(id string) bool {
+	if _, ok := vsq.Data.Value[id]; ok == false {
+		return false
+	}
+	delete(vsq.Data.Value, id)
+	vsq.writeDbFile()
+	return true
 }
