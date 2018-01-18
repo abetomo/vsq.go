@@ -49,7 +49,7 @@ func loadLikeSQS(filePath string) (VsqDataLikeSQS, error) {
 	return vsqData, nil
 }
 
-func (vsq *VerySimpleQueueLikeSQS) load(filePath string) (VsqDataLikeSQS, error) {
+func (vsq *VerySimpleQueueLikeSQS) Load(filePath string) (VsqDataLikeSQS, error) {
 	var err error
 	vsq.Data, err = loadLikeSQS(filePath)
 	if err != nil {
@@ -60,7 +60,7 @@ func (vsq *VerySimpleQueueLikeSQS) load(filePath string) (VsqDataLikeSQS, error)
 	return vsq.Data, nil
 }
 
-func (vsq VerySimpleQueueLikeSQS) size() int {
+func (vsq VerySimpleQueueLikeSQS) Size() int {
 	return len(vsq.Data.Value)
 }
 
@@ -69,7 +69,7 @@ func (vsq VerySimpleQueueLikeSQS) writeDbFile() {
 	ioutil.WriteFile(vsq.FilePath, bytes, 0644)
 }
 
-func (vsq *VerySimpleQueueLikeSQS) send(data string, idFunc func() string) string {
+func (vsq *VerySimpleQueueLikeSQS) Send(data string, idFunc func() string) string {
 	id := idFunc()
 	if vsq.Data.Value == nil {
 		vsq.Data.Value = map[string]string{}
@@ -87,8 +87,8 @@ func (vsq VerySimpleQueueLikeSQS) keys() []string {
 	return ks
 }
 
-func (vsq VerySimpleQueueLikeSQS) receive() (VsqDataLikeSQSValue, error) {
-	if vsq.size() == 0 {
+func (vsq VerySimpleQueueLikeSQS) Receive() (VsqDataLikeSQSValue, error) {
+	if vsq.Size() == 0 {
 		return VsqDataLikeSQSValue{}, errors.New("size is zero")
 	}
 	keys := vsq.keys()
@@ -97,7 +97,7 @@ func (vsq VerySimpleQueueLikeSQS) receive() (VsqDataLikeSQSValue, error) {
 	return VsqDataLikeSQSValue{id, vsq.Data.Value[id]}, nil
 }
 
-func (vsq *VerySimpleQueueLikeSQS) delete(id string) bool {
+func (vsq *VerySimpleQueueLikeSQS) Delete(id string) bool {
 	if _, ok := vsq.Data.Value[id]; ok == false {
 		return false
 	}

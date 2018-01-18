@@ -80,7 +80,7 @@ func Test_loadFailedValueInvalid(t *testing.T) {
 
 func TestLoadSuccess(t *testing.T) {
 	var vsq VerySimpleQueue
-	actual, err := vsq.load("testdata/data_file.json")
+	actual, err := vsq.Load("testdata/data_file.json")
 
 	if err != nil {
 		t.Fatalf("failed test %#v", err)
@@ -101,23 +101,23 @@ func TestLoadSuccess(t *testing.T) {
 
 func TestSizeWithValue(t *testing.T) {
 	var vsq VerySimpleQueue
-	if _, err := vsq.load("testdata/data_file.json"); err != nil {
+	if _, err := vsq.Load("testdata/data_file.json"); err != nil {
 		t.Fatalf("failed test %#v", err)
 	}
 
-	if expected := 3; vsq.size() != expected {
-		t.Fatalf("got %#v\nwant %#v", vsq.size(), expected)
+	if expected := 3; vsq.Size() != expected {
+		t.Fatalf("got %#v\nwant %#v", vsq.Size(), expected)
 	}
 }
 
 func TestSizeNoValue(t *testing.T) {
 	var vsq VerySimpleQueue
-	if _, err := vsq.load("not_exist"); err != nil {
+	if _, err := vsq.Load("not_exist"); err != nil {
 		t.Fatalf("failed test %#v", err)
 	}
 
-	if expected := 0; vsq.size() != expected {
-		t.Fatalf("got %#v\nwant %#v", vsq.size(), expected)
+	if expected := 0; vsq.Size() != expected {
+		t.Fatalf("got %#v\nwant %#v", vsq.Size(), expected)
 	}
 }
 
@@ -125,7 +125,7 @@ func TestWriteDbFile(t *testing.T) {
 	removeTestFile()
 
 	var vsq VerySimpleQueue
-	if _, err := vsq.load(testFilePath); err != nil {
+	if _, err := vsq.Load(testFilePath); err != nil {
 		t.Fatalf("failed test %#v", err)
 	}
 	vsq.writeDbFile()
@@ -144,11 +144,11 @@ func TestUnshiftSize1(t *testing.T) {
 	removeTestFile()
 
 	var vsq VerySimpleQueue
-	if _, err := vsq.load(testFilePath); err != nil {
+	if _, err := vsq.Load(testFilePath); err != nil {
 		t.Fatalf("failed test %#v", err)
 	}
 
-	size := vsq.unshift("hoge")
+	size := vsq.Unshift("hoge")
 
 	if expected := 1; size != expected {
 		t.Fatalf("got %#v\nwant %#v", size, expected)
@@ -172,13 +172,13 @@ func TestUnshiftSize3(t *testing.T) {
 	removeTestFile()
 
 	var vsq VerySimpleQueue
-	if _, err := vsq.load(testFilePath); err != nil {
+	if _, err := vsq.Load(testFilePath); err != nil {
 		t.Fatalf("failed test %#v", err)
 	}
 
-	vsq.unshift("hoge")
-	vsq.unshift("fuga")
-	size := vsq.unshift("piyo")
+	vsq.Unshift("hoge")
+	vsq.Unshift("fuga")
+	size := vsq.Unshift("piyo")
 
 	if expected := 3; size != expected {
 		t.Fatalf("got %#v\nwant %#v", size, expected)
@@ -202,12 +202,12 @@ func TestShiftSuccess(t *testing.T) {
 	removeTestFile()
 
 	var vsq VerySimpleQueue
-	if _, err := vsq.load(testFilePath); err != nil {
+	if _, err := vsq.Load(testFilePath); err != nil {
 		t.Fatalf("failed test %#v", err)
 	}
-	vsq.unshift("hoge")
+	vsq.Unshift("hoge")
 
-	value, err := vsq.shift()
+	value, err := vsq.Shift()
 	if err != nil {
 		t.Fatalf("failed test %#v", err)
 	}
@@ -221,11 +221,11 @@ func TestShiftFailed(t *testing.T) {
 	removeTestFile()
 
 	var vsq VerySimpleQueue
-	if _, err := vsq.load(testFilePath); err != nil {
+	if _, err := vsq.Load(testFilePath); err != nil {
 		t.Fatalf("failed test %#v", err)
 	}
 
-	value, err := vsq.shift()
+	value, err := vsq.Shift()
 	if err == nil {
 		t.Fatalf("Succeeded with failed test")
 	}
@@ -239,11 +239,11 @@ func TestPushSize1(t *testing.T) {
 	removeTestFile()
 
 	var vsq VerySimpleQueue
-	if _, err := vsq.load(testFilePath); err != nil {
+	if _, err := vsq.Load(testFilePath); err != nil {
 		t.Fatalf("failed test %#v", err)
 	}
 
-	size := vsq.push("hoge")
+	size := vsq.Push("hoge")
 
 	if expected := 1; size != expected {
 		t.Fatalf("got %#v\nwant %#v", size, expected)
@@ -267,13 +267,13 @@ func TestPushSize3(t *testing.T) {
 	removeTestFile()
 
 	var vsq VerySimpleQueue
-	if _, err := vsq.load(testFilePath); err != nil {
+	if _, err := vsq.Load(testFilePath); err != nil {
 		t.Fatalf("failed test %#v", err)
 	}
 
-	vsq.push("hoge")
-	vsq.push("fuga")
-	size := vsq.push("piyo")
+	vsq.Push("hoge")
+	vsq.Push("fuga")
+	size := vsq.Push("piyo")
 
 	if expected := 3; size != expected {
 		t.Fatalf("got %#v\nwant %#v", size, expected)
@@ -297,12 +297,12 @@ func TestPopSuccess(t *testing.T) {
 	removeTestFile()
 
 	var vsq VerySimpleQueue
-	if _, err := vsq.load(testFilePath); err != nil {
+	if _, err := vsq.Load(testFilePath); err != nil {
 		t.Fatalf("failed test %#v", err)
 	}
-	vsq.push("hoge")
+	vsq.Push("hoge")
 
-	value, err := vsq.pop()
+	value, err := vsq.Pop()
 	if err != nil {
 		t.Fatalf("failed test %#v", err)
 	}
@@ -316,11 +316,11 @@ func TestPopFailed(t *testing.T) {
 	removeTestFile()
 
 	var vsq VerySimpleQueue
-	if _, err := vsq.load(testFilePath); err != nil {
+	if _, err := vsq.Load(testFilePath); err != nil {
 		t.Fatalf("failed test %#v", err)
 	}
 
-	value, err := vsq.pop()
+	value, err := vsq.Pop()
 	if err == nil {
 		t.Fatalf("Succeeded with failed test")
 	}

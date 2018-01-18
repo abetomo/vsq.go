@@ -77,7 +77,7 @@ func Test_loadLikeSQSFailedValueInvalid(t *testing.T) {
 
 func TestLoadSuccess_LikeSQS(t *testing.T) {
 	var vsq VerySimpleQueueLikeSQS
-	actual, err := vsq.load("testdata/data_file_like_sqs.json")
+	actual, err := vsq.Load("testdata/data_file_like_sqs.json")
 
 	if err != nil {
 		t.Fatalf("failed test %#v", err)
@@ -98,23 +98,23 @@ func TestLoadSuccess_LikeSQS(t *testing.T) {
 
 func TestSizeWithValue_LikeSQS(t *testing.T) {
 	var vsq VerySimpleQueueLikeSQS
-	if _, err := vsq.load("testdata/data_file_like_sqs.json"); err != nil {
+	if _, err := vsq.Load("testdata/data_file_like_sqs.json"); err != nil {
 		t.Fatalf("failed test %#v", err)
 	}
 
-	if expected := 3; vsq.size() != expected {
-		t.Fatalf("got %#v\nwant %#v", vsq.size(), expected)
+	if expected := 3; vsq.Size() != expected {
+		t.Fatalf("got %#v\nwant %#v", vsq.Size(), expected)
 	}
 }
 
 func TestSizeNoValue_LikeSQS(t *testing.T) {
 	var vsq VerySimpleQueueLikeSQS
-	if _, err := vsq.load("not_exist"); err != nil {
+	if _, err := vsq.Load("not_exist"); err != nil {
 		t.Fatalf("failed test %#v", err)
 	}
 
-	if expected := 0; vsq.size() != expected {
-		t.Fatalf("got %#v\nwant %#v", vsq.size(), expected)
+	if expected := 0; vsq.Size() != expected {
+		t.Fatalf("got %#v\nwant %#v", vsq.Size(), expected)
 	}
 }
 
@@ -122,7 +122,7 @@ func TestWriteDbFile_LikeSQS(t *testing.T) {
 	removeTestFile()
 
 	var vsq VerySimpleQueueLikeSQS
-	if _, err := vsq.load(testFilePath); err != nil {
+	if _, err := vsq.Load(testFilePath); err != nil {
 		t.Fatalf("failed test %#v", err)
 	}
 	vsq.writeDbFile()
@@ -141,11 +141,11 @@ func TestSend(t *testing.T) {
 	removeTestFile()
 
 	var vsq VerySimpleQueueLikeSQS
-	if _, err := vsq.load(testFilePath); err != nil {
+	if _, err := vsq.Load(testFilePath); err != nil {
 		t.Fatalf("failed test %#v", err)
 	}
 
-	id := vsq.send("hoge", mockUniqId)
+	id := vsq.Send("hoge", mockUniqId)
 
 	if expected := "test-id"; id != expected {
 		t.Fatalf("got %#v\nwant %#v", id, expected)
@@ -170,7 +170,7 @@ func TestKeys(t *testing.T) {
 
 	var vsq VerySimpleQueueLikeSQS
 	var keys []string
-	if _, err := vsq.load(testFilePath); err != nil {
+	if _, err := vsq.Load(testFilePath); err != nil {
 		t.Fatalf("failed test %#v", err)
 	}
 
@@ -179,7 +179,7 @@ func TestKeys(t *testing.T) {
 		t.Fatalf("got %#v\nwant %#v", keys, expected)
 	}
 
-	vsq.send("hoge", mockUniqId)
+	vsq.Send("hoge", mockUniqId)
 	keys = vsq.keys()
 	if expected := []string{"test-id"}; !reflect.DeepEqual(keys, expected) {
 		t.Fatalf("got %#v\nwant %#v", keys, expected)
@@ -190,12 +190,12 @@ func TestReceiveSuccess(t *testing.T) {
 	removeTestFile()
 
 	var vsq VerySimpleQueueLikeSQS
-	if _, err := vsq.load(testFilePath); err != nil {
+	if _, err := vsq.Load(testFilePath); err != nil {
 		t.Fatalf("failed test %#v", err)
 	}
-	vsq.send("hoge", mockUniqId)
+	vsq.Send("hoge", mockUniqId)
 
-	value, err := vsq.receive()
+	value, err := vsq.Receive()
 	if err != nil {
 		t.Fatalf("failed test %#v", err)
 	}
@@ -209,11 +209,11 @@ func TestReceiveFailed(t *testing.T) {
 	removeTestFile()
 
 	var vsq VerySimpleQueueLikeSQS
-	if _, err := vsq.load(testFilePath); err != nil {
+	if _, err := vsq.Load(testFilePath); err != nil {
 		t.Fatalf("failed test %#v", err)
 	}
 
-	value, err := vsq.receive()
+	value, err := vsq.Receive()
 	if err == nil {
 		t.Fatalf("Succeeded with failed test")
 	}
@@ -227,22 +227,22 @@ func TestDeleteTrue(t *testing.T) {
 	removeTestFile()
 
 	var vsq VerySimpleQueueLikeSQS
-	if _, err := vsq.load(testFilePath); err != nil {
+	if _, err := vsq.Load(testFilePath); err != nil {
 		t.Fatalf("failed test %#v", err)
 	}
 
-	vsq.send("hoge", mockUniqId)
-	if expected := 1; vsq.size() != expected {
-		t.Fatalf("got %#v\nwant %#v", vsq.size(), expected)
+	vsq.Send("hoge", mockUniqId)
+	if expected := 1; vsq.Size() != expected {
+		t.Fatalf("got %#v\nwant %#v", vsq.Size(), expected)
 	}
 
-	ret := vsq.delete("test-id")
+	ret := vsq.Delete("test-id")
 	if expected := true; ret != expected {
 		t.Fatalf("got %#v\nwant %#v", ret, expected)
 	}
 
-	if expected := 0; vsq.size() != expected {
-		t.Fatalf("got %#v\nwant %#v", vsq.size(), expected)
+	if expected := 0; vsq.Size() != expected {
+		t.Fatalf("got %#v\nwant %#v", vsq.Size(), expected)
 	}
 
 	bytes, err := ioutil.ReadFile(testFilePath)
@@ -259,11 +259,11 @@ func TestDeleteFalse(t *testing.T) {
 	removeTestFile()
 
 	var vsq VerySimpleQueueLikeSQS
-	if _, err := vsq.load(testFilePath); err != nil {
+	if _, err := vsq.Load(testFilePath); err != nil {
 		t.Fatalf("failed test %#v", err)
 	}
 
-	ret := vsq.delete("hoge")
+	ret := vsq.Delete("hoge")
 
 	if expected := false; ret != expected {
 		t.Fatalf("got %#v\nwant %#v", ret, expected)

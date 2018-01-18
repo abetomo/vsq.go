@@ -35,7 +35,7 @@ func load(filePath string) (VsqData, error) {
 	return vsqData, nil
 }
 
-func (vsq *VerySimpleQueue) load(filePath string) (VsqData, error) {
+func (vsq *VerySimpleQueue) Load(filePath string) (VsqData, error) {
 	var err error
 	vsq.Data, err = load(filePath)
 	if err != nil {
@@ -46,7 +46,7 @@ func (vsq *VerySimpleQueue) load(filePath string) (VsqData, error) {
 	return vsq.Data, nil
 }
 
-func (vsq VerySimpleQueue) size() int {
+func (vsq VerySimpleQueue) Size() int {
 	return len(vsq.Data.Value)
 }
 
@@ -55,8 +55,8 @@ func (vsq VerySimpleQueue) writeDbFile() {
 	ioutil.WriteFile(vsq.FilePath, bytes, 0644)
 }
 
-func (vsq *VerySimpleQueue) shift() (string, error) {
-	if vsq.size() == 0 {
+func (vsq *VerySimpleQueue) Shift() (string, error) {
+	if vsq.Size() == 0 {
 		return "", errors.New("size is zero")
 	}
 	value := vsq.Data.Value[0]
@@ -65,16 +65,16 @@ func (vsq *VerySimpleQueue) shift() (string, error) {
 	return value, nil
 }
 
-func (vsq *VerySimpleQueue) unshift(data string) int {
+func (vsq *VerySimpleQueue) Unshift(data string) int {
 	value := &vsq.Data.Value
 	// https://github.com/golang/go/wiki/SliceTricks#unshift
 	(*value) = append([]string{data}, (*value)...)
 	vsq.writeDbFile()
-	return vsq.size()
+	return vsq.Size()
 }
 
-func (vsq *VerySimpleQueue) pop() (string, error) {
-	if vsq.size() == 0 {
+func (vsq *VerySimpleQueue) Pop() (string, error) {
+	if vsq.Size() == 0 {
 		return "", errors.New("size is zero")
 	}
 	length := len(vsq.Data.Value)
@@ -85,8 +85,8 @@ func (vsq *VerySimpleQueue) pop() (string, error) {
 	return value, nil
 }
 
-func (vsq *VerySimpleQueue) push(data string) int {
+func (vsq *VerySimpleQueue) Push(data string) int {
 	vsq.Data.Value = append(vsq.Data.Value, data)
 	vsq.writeDbFile()
-	return vsq.size()
+	return vsq.Size()
 }
