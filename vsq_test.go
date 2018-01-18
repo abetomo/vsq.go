@@ -3,24 +3,9 @@ package vsq
 import (
 	"errors"
 	"io/ioutil"
-	"os"
 	"reflect"
 	"testing"
 )
-
-const testFilePath = "/tmp/vsq_test.json"
-
-func removeTestFile() {
-	if _, err := os.Stat(testFilePath); err == nil {
-		os.Remove(testFilePath)
-	}
-}
-
-func TestMain(m *testing.M) {
-	exit := m.Run()
-	removeTestFile()
-	os.Exit(exit)
-}
 
 func Test_loadSuccess(t *testing.T) {
 	actual, err := load("testdata/data_file.json")
