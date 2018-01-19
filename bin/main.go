@@ -1,4 +1,3 @@
-// WIP
 package main
 
 import (
