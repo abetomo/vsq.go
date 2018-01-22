@@ -69,7 +69,7 @@ func (vsq *VerySimpleQueue) Unshift(data string) int {
 	value := &vsq.Data.Value
 	// https://github.com/golang/go/wiki/SliceTricks#unshift
 	(*value) = append([]string{data}, (*value)...)
-	vsq.writeDbFile()
+	defer vsq.writeDbFile()
 	return vsq.Size()
 }
 
@@ -79,14 +79,15 @@ func (vsq *VerySimpleQueue) Pop() (string, error) {
 	}
 	length := len(vsq.Data.Value)
 
+	defer vsq.writeDbFile()
+
 	var value string
 	value, vsq.Data.Value = vsq.Data.Value[length-1], vsq.Data.Value[:length-1]
-	vsq.writeDbFile()
 	return value, nil
 }
 
 func (vsq *VerySimpleQueue) Push(data string) int {
 	vsq.Data.Value = append(vsq.Data.Value, data)
-	vsq.writeDbFile()
+	defer vsq.writeDbFile()
 	return vsq.Size()
 }

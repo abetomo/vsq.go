@@ -75,7 +75,7 @@ func (vsq *VerySimpleQueueLikeSQS) Send(data string, idFunc func() string) strin
 		vsq.Data.Value = map[string]string{}
 	}
 	vsq.Data.Value[id] = data
-	vsq.writeDbFile()
+	defer vsq.writeDbFile()
 	return id
 }
 
@@ -102,6 +102,6 @@ func (vsq *VerySimpleQueueLikeSQS) Delete(id string) bool {
 		return false
 	}
 	delete(vsq.Data.Value, id)
-	vsq.writeDbFile()
+	defer vsq.writeDbFile()
 	return true
 }
