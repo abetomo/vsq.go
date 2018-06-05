@@ -28,7 +28,7 @@ type VerySimpleQueueLikeSQS struct {
 
 func UniqId() string {
 	timestamp := time.Now().Unix()
-	return fmt.Sprintf("%d-%s", timestamp/10, uuid.Must(uuid.NewV4()))
+	return fmt.Sprintf("%d-%s", timestamp/10, uuid.Must(uuid.NewV4(), nil))
 }
 
 func loadLikeSQS(filePath string) (VsqDataLikeSQS, error) {
