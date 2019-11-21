@@ -61,7 +61,7 @@ func (vsq *VerySimpleQueue) Shift() (string, error) {
 	}
 	value := vsq.Data.Value[0]
 	vsq.Data.Value = vsq.Data.Value[1:]
-	vsq.writeDbFile()
+	defer vsq.writeDbFile()
 	return value, nil
 }
 
@@ -79,10 +79,9 @@ func (vsq *VerySimpleQueue) Pop() (string, error) {
 	}
 	length := len(vsq.Data.Value)
 
-	defer vsq.writeDbFile()
-
 	var value string
 	value, vsq.Data.Value = vsq.Data.Value[length-1], vsq.Data.Value[:length-1]
+	defer vsq.writeDbFile()
 	return value, nil
 }
 
