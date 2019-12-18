@@ -122,12 +122,12 @@ func TestWriteDbFile_LikeSQS(t *testing.T) {
 	removeTestFile()
 
 	var vsq VerySimpleQueueLikeSQS
-	if _, err := vsq.Load(testFilePath); err != nil {
+	if _, err := vsq.Load(testFilePath()); err != nil {
 		t.Fatalf("failed test %#v", err)
 	}
 	vsq.writeDbFile()
 
-	bytes, err := ioutil.ReadFile(testFilePath)
+	bytes, err := ioutil.ReadFile(testFilePath())
 	if err != nil {
 		t.Fatalf("failed test %#v", err)
 	}
@@ -141,7 +141,7 @@ func TestSend(t *testing.T) {
 	removeTestFile()
 
 	var vsq VerySimpleQueueLikeSQS
-	if _, err := vsq.Load(testFilePath); err != nil {
+	if _, err := vsq.Load(testFilePath()); err != nil {
 		t.Fatalf("failed test %#v", err)
 	}
 
@@ -155,7 +155,7 @@ func TestSend(t *testing.T) {
 		t.Fatalf("got %#v\nwant %#v", vsq.Data, expected)
 	}
 
-	bytes, err := ioutil.ReadFile(testFilePath)
+	bytes, err := ioutil.ReadFile(testFilePath())
 	if err != nil {
 		t.Fatalf("failed test %#v", err)
 	}
@@ -170,7 +170,7 @@ func TestKeys(t *testing.T) {
 
 	var vsq VerySimpleQueueLikeSQS
 	var keys []string
-	if _, err := vsq.Load(testFilePath); err != nil {
+	if _, err := vsq.Load(testFilePath()); err != nil {
 		t.Fatalf("failed test %#v", err)
 	}
 
@@ -190,7 +190,7 @@ func TestReceiveSuccess(t *testing.T) {
 	removeTestFile()
 
 	var vsq VerySimpleQueueLikeSQS
-	if _, err := vsq.Load(testFilePath); err != nil {
+	if _, err := vsq.Load(testFilePath()); err != nil {
 		t.Fatalf("failed test %#v", err)
 	}
 	vsq.Send("hoge", mockUniqId)
@@ -209,7 +209,7 @@ func TestReceiveFailed(t *testing.T) {
 	removeTestFile()
 
 	var vsq VerySimpleQueueLikeSQS
-	if _, err := vsq.Load(testFilePath); err != nil {
+	if _, err := vsq.Load(testFilePath()); err != nil {
 		t.Fatalf("failed test %#v", err)
 	}
 
@@ -227,7 +227,7 @@ func TestDeleteTrue(t *testing.T) {
 	removeTestFile()
 
 	var vsq VerySimpleQueueLikeSQS
-	if _, err := vsq.Load(testFilePath); err != nil {
+	if _, err := vsq.Load(testFilePath()); err != nil {
 		t.Fatalf("failed test %#v", err)
 	}
 
@@ -245,7 +245,7 @@ func TestDeleteTrue(t *testing.T) {
 		t.Fatalf("got %#v\nwant %#v", vsq.Size(), expected)
 	}
 
-	bytes, err := ioutil.ReadFile(testFilePath)
+	bytes, err := ioutil.ReadFile(testFilePath())
 	if err != nil {
 		t.Fatalf("failed test %#v", err)
 	}
@@ -259,7 +259,7 @@ func TestDeleteFalse(t *testing.T) {
 	removeTestFile()
 
 	var vsq VerySimpleQueueLikeSQS
-	if _, err := vsq.Load(testFilePath); err != nil {
+	if _, err := vsq.Load(testFilePath()); err != nil {
 		t.Fatalf("failed test %#v", err)
 	}
 
